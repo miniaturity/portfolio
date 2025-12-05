@@ -1,4 +1,42 @@
-:global(body) {
-  margin: 0; padding: 0;
-  
+$mobile: 768px;
+$tablet: 1024px;
+$desktop: 1200px;
+$widedesktop: 1800px;
+
+@mixin mobile-up {
+  @media (min-width: $mobile) {
+    @content;
+  }
 }
+
+@mixin tablet-up {
+  @media (min-width: $tablet) {
+    @content;
+  }
+}
+
+@mixin desktop-up {
+  @media (min-width: $desktop) {
+    @content;
+  }
+}
+
+@mixin widedesktop-up {
+  @media (min-width: $widedesktop) {
+    @content;
+  }
+}
+
+:global(:root) {
+  --margin: 4px;
+}
+
+:global(body) {
+  margin: 0; padding: 0; 
+}
+
+@font-face {
+  font-family: nintendo;
+  src: url(../lib/assets/fonts/nintendo.ttf);
+}
+

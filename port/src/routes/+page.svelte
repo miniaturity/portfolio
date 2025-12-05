@@ -1,16 +1,24 @@
 <script lang="ts">
+  import Sidebar from "$lib/components/sidebar.svelte";
+  import type { Page } from "$lib/types";
+  
+  let page: Page = $state("about");
+
+  const setPage = (p: Page) => {
+    page = p;
+  }
 
 </script>
 
 
 <main>
-  <nav>
-    <!-- sidebar -->
-  </nav>
+  <div id="nav">
+    <Sidebar setPage={setPage}/>
+  </div>
 
   <div id="content">
     <div id="c__upper">
-      <!-- upper (pfp/sq) -->
+
     </div>
 
     <div id="c__lower">
@@ -22,10 +30,6 @@
 <style lang="scss">
   @use "../styles/globals";
 
-  :global(:root) {
-    --margin: 4px;
-  }
-
   main {
     width: 100vw;
     height: 100vh;
@@ -34,16 +38,15 @@
     flex-direction: row;
   }
 
-  nav {
-    width: 30%; height: 100%;
+  #nav {
+    width: 20%; height: 100%;
 
     display: flex;
     flex-direction: column;
-    background-color: green;
   }
 
   #content {
-    width: 70%; height: 100%;
+    width: 80%; height: 100%;
 
     display: flex;
     flex-direction: column;
