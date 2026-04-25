@@ -1,7 +1,6 @@
 <script lang="ts">
     import Synth from "$lib/components/synth.svelte";
 
-
 </script>
 
 <main>

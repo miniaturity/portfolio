@@ -1,9 +1,16 @@
 <script lang="ts">
+    import type { Component, Snippet } from "svelte";
+
     interface Tile {
         id: number;
         class?: string;
         style?: string;
         tag?: string;
+        component?: Component;
+        componentProps?: Record<string, any>;
+
+        snippet?: Snippet<[any]>;
+        snippetProps?: Record<string, any>;
     }
 
     function press(e: PointerEvent, id: number) {
@@ -14,11 +21,15 @@
 
     }
 
+    const tileContents = {
+        17: "1"
+    }
+
     const tiles: Tile[] = [
         { id: 1, class: "tile sil-speaker" },
         { id: 2, class: "tile sil-minik" },
-        { id: 3, class: "tile", style: "grid-row: 2; grid-column: 3" },
-        { id: 4, class: "tile", style: "grid-row: 2; grid-column: 4" },
+        { id: 3, class: "tile", style: "grid-row: 2; grid-column: 3", snippet: defaultTile},
+        { id: 4, class: "tile", style: "grid-row: 2; grid-column: 4", snippet: defaultTile },
         { id: 5, class: "tile sil-screen", tag: "div" },
 
         { id: 6, class: "tile sil-big", style: "grid-row: 1 / 2; grid-column: 9 / 10" },
@@ -26,40 +37,53 @@
         { id: 8, class: "tile sil-big", style: "grid-row: 1 / 2; grid-column: 13 / 14" },
         { id: 9, class: "tile sil-big", style: "grid-row: 1 / 2; grid-column: 15 / 16" },
 
-        { id: 10, class: "tile", style: "grid-row: 1; grid-column: 17" },
-        { id: 11, class: "tile", style: "grid-row: 2; grid-column: 17" },
+        { id: 10, class: "tile", style: "grid-row: 1; grid-column: 17", snippet: defaultTile },
+        { id: 11, class: "tile", style: "grid-row: 2; grid-column: 17", snippet: defaultTile },
 
         ...Array.from({ length: 17 }, (_, i) => ({
             id: i + 12,
             class: "tile",
-            style: `grid-row: 3; grid-column: ${i + 1}`
+            style: `grid-row: 3; grid-column: ${i + 1}`, 
+            snippet: defaultTile,
         })),
 
         ...Array.from({ length: 17 }, (_, i) => ({
             id: i + 29,
             class: "tile",
-            style: `grid-row: 4; grid-column: ${i + 1}`
+            style: `grid-row: 4; grid-column: ${i + 1}`, 
+            snippet: defaultTile
         })),
 
         ...Array.from({ length: 3 }, (_, i) => ({
             id: i + 46,
             class: "tile",
-            style: `grid-row: 5; grid-column: ${i + 1}`
+            style: `grid-row: 5; grid-column: ${i + 1}`, 
+            snippet: defaultTile
         })),
 
-        { id: 49, class: "tile", style: "grid-row: 5; grid-column: 4 / 8;" },
-        { id: 50, class: "tile", style: "grid-row: 5; grid-column: 8 / 11;" },
-        { id: 51, class: "tile", style: "grid-row: 5; grid-column: 11 / 15;" },
-        { id: 52, class: "tile", style: "grid-row: 5; grid-column: 15 / 18;" },
+        { id: 49, class: "tile", style: "grid-row: 5; grid-column: 4 / 8;", tag: "div" },
+        { id: 50, class: "tile", style: "grid-row: 5; grid-column: 8 / 11;", tag: "div" },
+        { id: 51, class: "tile", style: "grid-row: 5; grid-column: 11 / 15;", tag: "div" },
+        { id: 52, class: "tile", style: "grid-row: 5; grid-column: 15 / 18;", tag: "div" },
 
         ...Array.from({ length: 17 }, (_, i) => ({
             id: i + 53,
             class: "tile",
-            style: `grid-row: 6; grid-column: ${i + 1}`
+            style: `grid-row: 6; grid-column: ${i + 1}`, 
+            snippet: defaultTile
         })),
     ];
 
 </script>
+
+{#snippet defaultTile(content: string = "", texture?: string)}
+    <div class="tile-in">
+        {content}
+        {#if texture}
+            <img src={texture} alt=""/>
+        {/if}
+    </div>
+{/snippet}
 
 <div class="synth">
     <div class="s-inner">
@@ -78,7 +102,13 @@
                     onpointerdown={(e) => press(e, tile.id)}
                     onpointerup={(e) => release(e, tile.id)}
                 >
-                    <div class="t-in"></div>
+                    {#if tile.component}
+                        <tile.component {...tile.componentProps}/>
+                    {/if}
+
+                    {#if tile.snippet}
+                        {@render tile.snippet({ ...tile.snippetProps })}
+                    {/if}
                 </svelte:element>
             {/each}
         </div>
@@ -136,7 +166,21 @@
 
         border-radius: var(--i-br);
         border: var(--border);
-        background-color: var(--i-bg);
+        background: linear-gradient(to bottom, var(--i-bg), color-mix(in oklab, var(--i-bg), black 20%));
+        padding: 0;
+    }
+
+    .tile-in {
+        position: relative;
+        width: 100%; height: 100%;
+        &:after {
+            content: '';
+            position: absolute;
+            top: 7.5%; left: 7.5%;
+            width: 85%; height: 85%;
+            border-radius: 100%;
+            background: linear-gradient(to top, var(--i-bg), color-mix(in oklab, var(--i-bg), black 20%));
+        }
     }
 
     .sil-speaker {
@@ -159,7 +203,7 @@
         grid-column: 5 / 9;
         width: 100%;
         height: 200%;
-        background-color: #000;
+        background: #000;
     }
 
     .sil-big {
